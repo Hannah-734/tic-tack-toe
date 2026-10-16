@@ -1,57 +1,64 @@
-const LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-const boardEl = document.getElementById("board");
-const statusEl = document.getElementById("status");
-const scoreEl = document.getElementById("score");
-const scores = { X: 0, O: 0, Draw: 0 };
-let board, player, over;
-
-const cells = Array.from({ length: 9 }, (_, i) => {
-  const b = document.createElement("button");
-  b.className = "cell";
-  b.setAttribute("aria-label", "Square " + (i + 1));
-  b.addEventListener("click", () => play(i));
-  boardEl.appendChild(b);
-  return b;
-});
-
-function newGame() {
-  board = Array(9).fill(null);
-  player = "X";
-  over = false;
-  cells.forEach(c => { c.textContent = ""; c.className = "cell"; c.disabled = false; });
-  statusEl.textContent = "X's turn";
+* {
+  box-sizing: border-box;
 }
 
-function play(i) {
-  if (over || board[i]) return;
-  board[i] = player;
-  cells[i].textContent = player;
-  cells[i].classList.add(player);
-  cells[i].disabled = true;
-
-  const line = LINES.find(l => l.every(k => board[k] === player));
-  if (line) {
-    line.forEach(k => cells[k].classList.add("win"));
-    return end(player + " wins!", player);
-  }
-  if (board.every(Boolean)) return end("It's a draw.", "Draw");
-
-  player = player === "X" ? "O" : "X";
-  statusEl.textContent = player + "'s turn";
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  font-family: system-ui, sans-serif;
+  color: #1f2937;
+  background: #f3f4f6;
 }
 
-function end(message, key) {
-  over = true;
-  scores[key]++;
-  statusEl.textContent = message;
-  cells.forEach(c => c.disabled = true);
-  renderScore();
+#board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(72px, 100px));
+  gap: 8px;
 }
 
-function renderScore() {
-  scoreEl.textContent = `X ${scores.X} · O ${scores.O} · Draws ${scores.Draw}`;
+.cell {
+  aspect-ratio: 1;
+  border: 2px solid #d1d5db;
+  border-radius: 12px;
+  background: #fff;
+  font: 700 2.5rem/1 system-ui, sans-serif;
+  cursor: pointer;
 }
 
-document.getElementById("restart").addEventListener("click", newGame);
-renderScore();
-newGame();
+.cell:disabled {
+  cursor: default;
+}
+
+.cell.X {
+  color: #2563eb;
+}
+
+.cell.O {
+  color: #db2777;
+}
+
+.cell.win {
+  border-color: #16a34a;
+  background: #dcfce7;
+}
+
+#status,
+#score {
+  margin: 16px 0;
+  text-align: center;
+}
+
+#restart {
+  display: block;
+  margin: 16px auto;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  background: #2563eb;
+  font: inherit;
+  cursor: pointer;
+}
